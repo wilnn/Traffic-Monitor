@@ -10,7 +10,7 @@ def geocodingService(city, state, country):
     query = f'{city}, {state}, {country}'
 
     # Make the API request
-    url = f'https://maps.googleapis.com/maps/api/geocode/json'
+    url = os.getenv('GEOCODING')
     params = {
         'address': query,
         'key': api_key
@@ -33,3 +33,4 @@ def geocodingService(city, state, country):
         return 'ERROR1'
 
 geocodingService('Boston', 'Massachusetts', 'United State')
+
