@@ -18,3 +18,18 @@ def geocodingService(city, state, country):
     response = requests.get(url, params=params)
     data = response.json()
 
+    # Extract the bounding box from the response
+    if data['status'] == 'OK' and len(data['results']) > 0:
+        result = data['results'][0]
+        viewport = result['geometry']['viewport']
+        northeast = viewport['northeast']
+        southwest = viewport['southwest']
+        
+        #print(f"Northeast Corner: Latitude: {northeast['lat']}, Longitude: {northeast['lng']}")
+        #print(f"Southwest Corner: Latitude: {southwest['lat']}, Longitude: {southwest['lng']}")
+        return northeast, southwest
+    else:
+        #print("City not found or error in API request.")
+        return 'ERROR1'
+
+geocodingService('Boston', 'Massachusetts', 'United State')
