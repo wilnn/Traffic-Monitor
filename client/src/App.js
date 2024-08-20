@@ -3,23 +3,35 @@ import './style.css';
 
 export const MyForm = () => {
     // Use useState for each input field
-    const [webpageLink, setwebpageLink] = React.useState('');
+    const [City, setCity] = React.useState('');
+    const [State, setState] = React.useState('');
+    const [Country, setCountry] = React.useState('');
     const [timeInterval, settimeInterval] = React.useState('');
     const [email, setEmail] = React.useState('');
   
     // Event handler for the first input field
     const handleInputChange1 = (event) => {
       // Remove spaces from the input value
-      var sanitizedValue = event.target.value.replace(/\s/g, '');
-      setwebpageLink(sanitizedValue);
+      // var sanitizedValue = event.target.value.replace(/\s/g, '');
+      setCity(event.target.value);
+    };
+    const handleInputChange2 = (event) => {
+      // Remove spaces from the input value
+      // var sanitizedValue = event.target.value.replace(/\s/g, '');
+      setState(event.target.value);
+    };
+    const handleInputChange3 = (event) => {
+      // Remove spaces from the input value
+      // var sanitizedValue = event.target.value.replace(/\s/g, '');
+      setCountry(event.target.value);
     };
   
     // Event handler for the second input field
-    const handleInputChange2 = (event) => {
+    const handleInputChange4 = (event) => {
       settimeInterval(event.target.value);
     };
   
-    const handleInputChange3 = (event) => {
+    const handleInputChange5 = (event) => {
       //the email input type will handle the input value. No need to sanitized the value.
       setEmail(event.target.value);
     };
@@ -45,13 +57,13 @@ export const MyForm = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ link: webpageLink, time: timeInterval, clientEmail : email.toLowerCase() }),
+        body: JSON.stringify({ city: City, state: State, country: Country, time: timeInterval, clientEmail : email.toLowerCase() }),
       })
         .then(response => response.json())
         .then(result => {
           console.log(result);
           // Handle the response from the Flask backend
-          if (result['value'] === 'Page retrieval failed.') {
+          /*if (result['value'] === 'Page retrieval failed.') {
             loading.innerHTML = '';
             display.innerHTML = 'Page retrieval failed.';
             } else if((result['value']) === 2) {
@@ -60,7 +72,7 @@ export const MyForm = () => {
           } else {
             loading.innerHTML = '';
             display.innerHTML = '<iframe id="externalFrame" src="http://127.0.0.1:5500/website-tracker/viewpage/viewpage.html" style="width:80%; height: 700px;"></iframe>';
-          }
+          }*/
         })
         .catch(error => {
           console.error('Error:', error);
@@ -69,12 +81,16 @@ export const MyForm = () => {
     return (
       <>
         <form onSubmit={handleSubmit}>
-           <label for ="webpageLink"><p class = "heroSubText color">Link to the webpage:</p></label>
-            <input type="text" value ={webpageLink} onChange={handleInputChange1} name="webpageLink" id = "webpageLink" size = "50px" maxlength="9999" required/>
+           <label for ="City"><p class = "heroSubText color">City:</p></label>
+            <input type="text" value ={City} onChange={handleInputChange1} name="City" id = "City" size = "50px" maxlength="9999" required/>
+            <label for ="State"><p class = "heroSubText color">State (optional):</p></label>
+            <input type="text" value ={City} onChange={handleInputChange2} name="State" id = "State" size = "50px" maxlength="9999"/>
+            <label for ="Country"><p class = "heroSubText color">Country:</p></label>
+            <input type="text" value ={Country} onChange={handleInputChange3} name="Country" id = "Country" size = "50px" maxlength="9999" required/>
             <label for="timeInterval"><p class = "inputText color">Time interval (minutes):</p><p  class = "inputSubText color">The webpage will be check after every this amount of time. Minimum is 10 mins to avoid any bad consequences due to web scraping.</p></label>
-            <input type="number" value={timeInterval} onChange={handleInputChange2} id="timeInterval" name="timeInterval" min="1" max = "999999"step="1" placeholder="10-999999" required/>
+            <input type="number" value={timeInterval} onChange={handleInputChange4} id="timeInterval" name="timeInterval" min="1" max = "999999"step="1" placeholder="10-999999" required/>
             <label for ="email"><p class = "inputText color">Email:</p></label>
-            <input type = "email" value={email} onChange={handleInputChange3} id="email" name="email" required size = "50px"/><br/>
+            <input type = "email" value={email} onChange={handleInputChange5} id="email" name="email" required size = "50px"/><br/>
             <input type = "submit" value = "GO!" class = "button color"/>
         </form>
       </>
