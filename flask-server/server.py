@@ -66,6 +66,7 @@ def data():
     
     #get not timezone specific time
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
+
     #turn not timezone aware object into naive 
     notTimeZoneAware2 = notTimeZoneAware.astimezone(timezone.utc).replace(tzinfo=None)
     newTime = notTimeZoneAware2 + timedelta(minutes=int(data['time']))
@@ -80,16 +81,17 @@ def data():
     #again when running again to find the changes, tag is the set of tags of the selected text 
     #which will be used to compare with run again to find differences
     cur.execute('''CREATE TABLE IF NOT EXISTS data (
-                 url varchar(32779),
+                 city varchar(200),
+                 state varchar(100),
+                 country varchar(100),
                  email varchar(320),
                  interval int,
                  time TIMESTAMP PRIMARY KEY,
                  next_run timestamp without time zone,
-                 id text[],
-                 tag text[])''')
+                 id text[]''')
     
-    insertQuery ='''INSERT INTO data (url, email, interval, time, next_run) VALUES (%s, %s, %s, %s, %s)'''
-    value = (data['link'], data['clientEmail'], data['time'], notTimeZoneAware2, newTime)
+    insertQuery ='''INSERT INTO data (city, state, country, email, interval, time, next_run) VALUES (%s, %s, %s, %s, %s)'''
+    value = (data['city'], data['state'], data['country'], data['clientEmail'], data['time'], notTimeZoneAware2, newTime)
     #use place holder method to avoid SQL injecion
     cur.execute(insertQuery, value)
     conn.commit()
