@@ -1,7 +1,6 @@
 from flask import Flask, request
 from flask_cors import CORS
-from scrape import Scrape
-from bs4 import BeautifulSoup
+import services
 from dotenv import load_dotenv
 from datetime import timedelta, timezone
 import smtplib, datetime, os, psycopg2
@@ -12,6 +11,32 @@ from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 CORS(app)
+
+load_dotenv()
+
+def testEmail(email):
+    message = MIMEMultipart()
+    message["From"] = os.getenv('SENDER_EMAIL')
+    message["To"] = email
+    message["Subject"] = 'Test Email'
+    body = "This email is to verify that the given email is correct, and you can start receiving emails regarding content changes from now on."
+    message.attach(MIMEText(body, "plain"))
+
+    # Establish a connection to the SMTP server
+    try:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            # Start the TLS connection
+            server.starttls()
+
+            # Login to your Gmail account
+            server.login(os.getenv('SENDER_EMAIL'), os.getenv('EMAIL_PASSWORD'))
+            # Send the email
+            server.sendmail(os.getenv('SENDER_EMAIL'), email, message.as_string())
+    except Exception as e:
+        print('error sending email: '+ str(e))
+        return -1
+    return 0
+    
 
 @app.route("/data", methods=['POST'])
 def data():
@@ -30,26 +55,9 @@ def data():
     print(timezone_str)'''
 
     #test given email
-    message = MIMEMultipart()
-    message["From"] = os.getenv('SENDER_EMAIL')
-    message["To"] = data['clientEmail']
-    message["Subject"] = 'Test Email'
-    body = "This email is to verify that the given email is correct, and you can start receiving emails regarding content changes from now on."
-    message.attach(MIMEText(body, "plain"))
-
-    # Establish a connection to the SMTP server
-    try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            # Start the TLS connection
-            server.starttls()
-
-            # Login to your Gmail account
-            server.login(os.getenv('SENDER_EMAIL'), os.getenv('EMAIL_PASSWORD'))
-            # Send the email
-            server.sendmail(os.getenv('SENDER_EMAIL'), data['clientEmail'], message.as_string())
-    except Exception as e:
-        print('error sending email: '+ str(e))
-        return {"value": 1}
+    status = testEmail(data['clientEmail'])
+    if status == -1:
+        return {'value': 'ERROR1'}
     
     #start initial scraping
     spider = Scrape(data['link'])
@@ -63,7 +71,6 @@ def data():
     notTimeZoneAware2 = notTimeZoneAware.astimezone(timezone.utc).replace(tzinfo=None)
     newTime = notTimeZoneAware2 + timedelta(minutes=int(data['time']))
 
-    load_dotenv()
     conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
                         password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
     cur = conn.cursor()
@@ -115,7 +122,6 @@ def tags():
     with open("../viewpage/viewpage.html", 'w', encoding="utf-8") as file:
         file.write('')
     
-    load_dotenv()
     conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
                         password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
     cur = conn.cursor()
@@ -146,7 +152,6 @@ def tags():
 def unregister():
     data = request.get_json()
 
-    load_dotenv()
     conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
                         password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
     cur = conn.cursor()
