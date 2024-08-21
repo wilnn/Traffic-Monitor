@@ -34,6 +34,8 @@ def geocodingService(city, state, country):
         #print("City not found or error in API request.")
         return 'ERROR2'
 
+#northeast, southwest = geocodingService('Boston', 'Massachusetts', 'United State')
+
 def trafficIncidentService(topRight, bottomLeft):
     url = os.getenv('TRAFFICINCIDENTURL')
     bbox = f"{bottomLeft['lng']}, {bottomLeft['lat']}, {topRight['lng']}, {topRight['lat']}"
@@ -55,3 +57,4 @@ def trafficIncidentService(topRight, bottomLeft):
     
     #print(json.dumps(data, indent=4))
 
+#trafficIncidentService(northeast, southwest)
