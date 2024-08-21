@@ -10,7 +10,7 @@ def geocodingService(city, state, country):
     query = f'{city}, {state}, {country}'
 
     # Make the API request
-    url = os.getenv('GEOCODING')
+    url = os.getenv('GEOCODINGURL')
     params = {
         'address': query,
         'key': api_key
@@ -30,7 +30,19 @@ def geocodingService(city, state, country):
         return northeast, southwest
     else:
         #print("City not found or error in API request.")
-        return 'ERROR1'
+        return 'ERROR2'
 
-geocodingService('Boston', 'Massachusetts', 'United State')
+#geocodingService('Boston', 'Massachusetts', 'United State')
 
+def trafficIncidentService(topRight, bottomLeft):
+    url = os.getenv('TRAFFICINCIDENTURL')
+    bbox = f"{bottomLeft['lng']}, {bottomLeft['lat']}, {topRight['lng']}, {topRight['lat']}"
+    params = {
+        "key": os.getenv('TOMTOMAPIKEY'),
+        "bbox": bbox,
+        #"fields": "id,geometry,properties",
+        #"categories": "JAM,ROADWORK",
+        'language': 'en-US'
+    }
+    
+    response = requests.get(url, params=params)
