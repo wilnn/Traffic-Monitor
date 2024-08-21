@@ -229,10 +229,10 @@ def main():
         cur.execute('''DELETE FROM data WHERE id IS NULL''')
         conn.commit()
 
-        #handle empty row
+        #handle the case when the table is empty
         cur.execute('''SELECT COUNT(*) FROM data''')
         conn.commit()
-        if not cur.fetchone()[0]:
+        if cur.fetchone()[0] == 0:
             seconds = 6000
             break
 
@@ -241,7 +241,7 @@ def main():
         dataDB = cur.fetchone()
         #print(dataDB)
 
-        seconds = getSleepTime(conn, cur, dataDB[4])
+        seconds = getSleepTime(conn, cur, dataDB[6])
         
         if (seconds > 5):
             break

@@ -98,22 +98,6 @@ def data():
     conn.close()
     cur.close()
 
-    html = spider.getModifiedHTML(content)
-    htmlstr = str(html.prettify())
-    with open("../viewpage/viewpage.html", 'w', encoding="utf-8") as file:
-        file.write(htmlstr)
-    return {'value':htmlstr}
-
-def getTagsByIDs(idss):
-    with open('../viewpage/viewpage.html','r', encoding="utf-8") as f:
-        data = f.read()
-
-    soup = BeautifulSoup(data, "html.parser")
-    tags = []
-    for idd in idss:
-        tags.append(str(soup.find(id=idd).parent))
-    return tags
-
 @app.route("/tags", methods=['POST'])
 def tags():
     data = request.get_json()
