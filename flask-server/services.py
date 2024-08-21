@@ -1,6 +1,6 @@
 import requests, os
 from dotenv import load_dotenv
-
+import json
 load_dotenv()
 
 def geocodingService(city, state, country):
@@ -16,6 +16,8 @@ def geocodingService(city, state, country):
         'key': api_key
     }
     response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return f'Can not make request to Google API. ERROR: {response.status_code}'
     data = response.json()
 
     # Extract the bounding box from the response
@@ -25,24 +27,31 @@ def geocodingService(city, state, country):
         northeast = viewport['northeast']
         southwest = viewport['southwest']
         
-        #print(f"Northeast Corner: Latitude: {northeast['lat']}, Longitude: {northeast['lng']}")
-        #print(f"Southwest Corner: Latitude: {southwest['lat']}, Longitude: {southwest['lng']}")
+        print(f"Northeast Corner: Latitude: {northeast['lat']}, Longitude: {northeast['lng']}")
+        print(f"Southwest Corner: Latitude: {southwest['lat']}, Longitude: {southwest['lng']}")
         return northeast, southwest
     else:
         #print("City not found or error in API request.")
         return 'ERROR2'
 
-#geocodingService('Boston', 'Massachusetts', 'United State')
-
 def trafficIncidentService(topRight, bottomLeft):
     url = os.getenv('TRAFFICINCIDENTURL')
     bbox = f"{bottomLeft['lng']}, {bottomLeft['lat']}, {topRight['lng']}, {topRight['lat']}"
+    #field = "{incidents{type,geometry{type,coordinates},properties{id,iconCategory,magnitudeOfDelay,events{description,code,iconCategory},startTime,endTime,from,to,length,delay,roadNumbers,timeValidity,probabilityOfOccurrence,numberOfReports}}}"
+    field = "{incidents{type,properties{id,iconCategory,magnitudeOfDelay,events{description,code,iconCategory},startTime,endTime,from,to,length,delay,roadNumbers,timeValidity,probabilityOfOccurrence,numberOfReports}}}"
+
     params = {
         "key": os.getenv('TOMTOMAPIKEY'),
         "bbox": bbox,
-        #"fields": "id,geometry,properties",
+        "fields": field,
         #"categories": "JAM,ROADWORK",
         'language': 'en-US'
     }
     
     response = requests.get(url, params=params)
+    if response.status_code != 200:
+        return f'Can not make request TomTom API. ERROR: {response.status_code}'
+    data = response.json()
+    
+    #print(json.dumps(data, indent=4))
+
