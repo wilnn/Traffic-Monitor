@@ -6,8 +6,11 @@ load_dotenv()
 def geocodingService(city, state, country):
     # Define your API key and the city/state
     api_key = os.getenv('GOOGLEAPIKEY')
+    if not state:
+        query = f'{city}, {state}, {country}'
+    else:
+        query = f'{city}, {country}'
 
-    query = f'{city}, {state}, {country}'
 
     # Make the API request
     url = os.getenv('GEOCODINGURL')
@@ -19,7 +22,8 @@ def geocodingService(city, state, country):
     if response.status_code != 200:
         return f'Can not make request to Google API. ERROR: {response.status_code}'
     data = response.json()
-
+    #print(json.dumps(data, indent=4))
+    #print("***************************************")
     # Extract the bounding box from the response
     if data['status'] == 'OK' and len(data['results']) > 0:
         result = data['results'][0]
@@ -27,14 +31,14 @@ def geocodingService(city, state, country):
         northeast = viewport['northeast']
         southwest = viewport['southwest']
         
-        print(f"Northeast Corner: Latitude: {northeast['lat']}, Longitude: {northeast['lng']}")
-        print(f"Southwest Corner: Latitude: {southwest['lat']}, Longitude: {southwest['lng']}")
+        #print(f"Northeast Corner: Latitude: {northeast['lat']}, Longitude: {northeast['lng']}")
+        #print(f"Southwest Corner: Latitude: {southwest['lat']}, Longitude: {southwest['lng']}")
         return northeast, southwest
     else:
         #print("City not found or error in API request.")
         return 'ERROR2'
 
-#northeast, southwest = geocodingService('Boston', 'Massachusetts', 'United State')
+northeast, southwest = geocodingService('Boston', 'Massachusetts', 'United State')
 
 def trafficIncidentService(topRight, bottomLeft):
     url = os.getenv('TRAFFICINCIDENTURL')
@@ -51,10 +55,18 @@ def trafficIncidentService(topRight, bottomLeft):
     }
     
     response = requests.get(url, params=params)
+
     if response.status_code != 200:
         return f'Can not make request TomTom API. ERROR: {response.status_code}'
+    
     data = response.json()
+
+    if len(data["incidents"]) == 0:
+        return 'Error3'
     
     #print(json.dumps(data, indent=4))
+    return data
+    
+    
 
-#trafficIncidentService(northeast, southwest)
+trafficIncidentService(northeast, southwest)
