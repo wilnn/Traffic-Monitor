@@ -36,7 +36,7 @@ def geocodingService(city, state, country):
         return northeast, southwest
     else:
         #print("City not found or error in API request.")
-        return 'ERROR2'
+        return 'ERROR2', 'ERROR2'
 
 #northeast, southwest = geocodingService('Boston', 'Massachusetts', 'United State')
 

@@ -59,12 +59,11 @@ def data():
     if status == -1:
         return {'value': 'ERROR1'}
     
-    #start initial scraping
-    spider = Scrape(data['link'])
-    content = spider.scrape()
-    if content == "Page retrieval failed.":
-        print(content)
-        return {"value":content}
+    # get the bounding box for the given location. also test that location
+    northeast, southwest = services.geocodingService(data['city'], data['state'], data['country'])
+    if northeast == 'ERROR2':
+        return {"value":'ERROR2'}
+    
     #get not timezone specific time
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
     #turn not timezone aware object into naive 
