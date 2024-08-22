@@ -88,15 +88,15 @@ def data():
     #again when running again to find the changes, tag is the set of tags of the selected text 
     #which will be used to compare with run again to find differences
     cur.execute('''CREATE TABLE IF NOT EXISTS data (
-                 ID varchar(7)
+                 ID varchar(7) PRIMARY KEY,
                  city varchar(200),
                  state varchar(100),
                  country varchar(100),
                  coordinate varchar(300)
                  email varchar(320),
                  interval int,
-                 time TIMESTAMP PRIMARY KEY,
-                 next_run timestamp without time zone,
+                 time DATETIME,
+                 next_run DATETIME,
                  incidentID varchar(10000)''')
     
     insertQuery ='''INSERT INTO data (city, state, country, coordinate, email, interval, time, next_run) VALUES (%s, %s, %s, %s, %s)'''
