@@ -9,15 +9,16 @@ import services
 
 
 '''CREATE TABLE IF NOT EXISTS data (
+                 ID varchar(7) PRIMARY KEY,
                  city varchar(200),
                  state varchar(100),
                  country varchar(100),
                  coordinate varchar(300)
                  email varchar(320),
                  interval int,
-                 time TIMESTAMP PRIMARY KEY,
-                 next_run timestamp without time zone,
-                 id varchar(10000)'''
+                 time DATETIME,
+                 next_run DATETIME,
+                 incidentID varchar(10000)'''
 
 def getSleepTime(ttime):
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
@@ -38,9 +39,9 @@ def checkIncident(dataDB):
     to_ = []
     detail = []
 
-    #northeast, southwest = services.geocodingService(dataDB[0], dataDB[1], dataDB[2])
+    #northeast, southwest = services.geocodingService(dataDB[1], dataDB[2], dataDB[3])
     # convert the string to list
-    coordinate = dataDB[3].split(',')
+    coordinate = dataDB[4].split(',')
 
     northeast = {'lng': float(coordinate[0]), 'lat': float(coordinate[1])}
     southwest = {'lng': float(coordinate[2]), 'lat': float(coordinate[3])}
@@ -48,7 +49,7 @@ def checkIncident(dataDB):
     data = services.trafficIncidentService(northeast, southwest)
     if not isinstance(data, str):
         for incident in data['incidents']:
-            if incident['properties']['id'] in dataDB[8]:
+            if incident['properties']['id'] in dataDB[9]:
                 continue
             id.append(incident['properties']['id'][len(incident['properties']['id'])-3:])
             from_.append(incident['properties']['from'])
@@ -64,19 +65,19 @@ def updateDB(cur, dataDB, id=[]):
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
     #turn not timezone aware object into naive 
     notTimeZoneAware2 = notTimeZoneAware.astimezone(timezone.utc).replace(tzinfo=None)
-    newNext_run = notTimeZoneAware2 + timedelta(minutes=dataDB[2])
+    newNext_run = notTimeZoneAware2 + timedelta(minutes=dataDB[6])
 
     if not id:
         query = '''UPDATE data SET next_run = %s WHERE data.time = %s'''
-        value = (newNext_run, dataDB[3])
+        value = (newNext_run, dataDB[4])
         cur.execute(query, value)
     else:
         id = ','.join(id)
-        id = dataDB[8] + id
+        id = dataDB[9] + id
         # turn python list into a string that look like an array in the format {..., ..., ...} to match with the array type in the database
-        query = '''UPDATE data SET next_run = %s, id = %s WHERE data.time = %s'''
+        query = '''UPDATE data SET next_run = %s, incidentID = %s WHERE ID = %s'''
         
-        value = (newNext_run, id, dataDB[3])
+        value = (newNext_run, id, dataDB[0])
         cur.execute(query, value)
 
 def sendEmail(from_, to_, detail, email, city, state, country):
@@ -149,6 +150,17 @@ def sendEmail(from_, to_, detail, email, city, state, country):
         return -1
     return 0
 
+def resetID(cur, nextRun, originalTime, id):
+    notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
+    #turn not timezone aware object into naive 
+    notTimeZoneAware2 = notTimeZoneAware.astimezone(timezone.utc).replace(tzinfo=None)
+    diff = nextRun - originalTime
+    second = diff.total_seconds()
+    # if 24 hours or more have passed
+    if (second / 86400) >= 1:
+        query = '''UPDATE data SET time = %s WHERE ID = %s'''
+        value = (notTimeZoneAware2, id)
+        cur.execute(query, value)
 
 def main():
     load_dotenv()
@@ -160,10 +172,6 @@ def main():
     cur = conn.cursor()
 
     while True:
-        #remove row with no value in id column
-        cur.execute('''DELETE FROM data WHERE id IS NULL''')
-        conn.commit()
-
         #handle the case when the table is empty
         cur.execute('''SELECT COUNT(*) FROM data''')
         conn.commit()
@@ -176,7 +184,7 @@ def main():
         dataDB = cur.fetchone()
         #print(dataDB)
 
-        seconds = getSleepTime(dataDB[7])
+        seconds = getSleepTime(dataDB[8])
         
         if seconds > 5:
             break
@@ -185,18 +193,18 @@ def main():
         if id:
             updateDB(cur, dataDB, id)
             conn.commit()
-            if sendEmail(from_, to_, detail, dataDB[4], dataDB[0], dataDB[1], dataDB[2]) == -1:
-                cur.execute(f'''DELETE FROM data WHERE time = {dataDB[6]}''')
+            if sendEmail(from_, to_, detail, dataDB[5], dataDB[1], dataDB[2], dataDB[3]) == -1:
+                cur.execute(f'''DELETE FROM data WHERE ID = {dataDB[0]}''')
                 conn.commit()
         else:
             updateDB(cur, dataDB)
             conn.commit()
+        resetID(cur, dataDB[8], dataDB[7], dataDB[0])
     
     conn.close()
     cur.close()
     print('Sleeping for '+ str(seconds) + ' second(s)....')
     return seconds
-
 
 if __name__ == "__main__":
     while True:
