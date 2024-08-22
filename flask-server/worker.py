@@ -19,7 +19,6 @@ import services
                  id varchar(10000)'''
 
 def getSleepTime(ttime):
-    
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
     #turn not timezone aware object into naive 
     notTimeZoneAware2 = notTimeZoneAware.astimezone(timezone.utc).replace(tzinfo=None)
@@ -61,29 +60,22 @@ def checkIncident(dataDB):
     return id, from_, to_, detail
 
 def updateDB(cur, dataDB, id=[]):
-    #list is mutable so need to make a copy to avoid changing the original list
-    if newTag:
-        if newTag[0]:
-            nv = [newTag[i][0] for i in range(0, len(newTag))]
-
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
     #turn not timezone aware object into naive 
     notTimeZoneAware2 = notTimeZoneAware.astimezone(timezone.utc).replace(tzinfo=None)
     newNext_run = notTimeZoneAware2 + timedelta(minutes=dataDB[2])
 
-    if not nv:
+    if not id:
         query = '''UPDATE data SET next_run = %s WHERE data.time = %s'''
         value = (newNext_run, dataDB[3])
         cur.execute(query, value)
     else:
-        for index, i in enumerate(dataDB[5]):
-            if i not in nv:
-                nv.insert(index, dataDB[6][index])
-        print(type(nv))
+        id = ','.join(id)
+        id = dataDB[8] + id
         # turn python list into a string that look like an array in the format {..., ..., ...} to match with the array type in the database
-        query = '''UPDATE data SET next_run = %s, tag = %s WHERE data.time = %s'''
+        query = '''UPDATE data SET next_run = %s, id = %s WHERE data.time = %s'''
         
-        value = (newNext_run, nv, dataDB[3])
+        value = (newNext_run, id, dataDB[3])
         cur.execute(query, value)
 
 def sendEmail(oldTag, newTag, newValue, oldValue, changeType, email, url):
@@ -212,7 +204,7 @@ def main():
                 cur.execute(f'''DELETE FROM data WHERE time = {dataDB[6]}''')
                 conn.commit()
         else:
-            updateDB(conn, cur, dataDB)
+            updateDB(cur, dataDB)
             conn.commit()
     
     conn.close()
