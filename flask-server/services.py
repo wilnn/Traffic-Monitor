@@ -62,7 +62,7 @@ def trafficIncidentService(topRight, bottomLeft):
     data = response.json()
 
     if len(data["incidents"]) == 0:
-        return 'Error3'
+        return 'ERROR3'
     
     #print(json.dumps(data, indent=4))
     return data

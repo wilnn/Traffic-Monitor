@@ -1,11 +1,22 @@
-from scrape import Scrape
-from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from datetime import timedelta, timezone
 import time, copy, smtplib, os, psycopg2, datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import html
+import services
+
+
+'''CREATE TABLE IF NOT EXISTS data (
+                 city varchar(200),
+                 state varchar(100),
+                 country varchar(100),
+                 coordinate varchar(300)
+                 email varchar(320),
+                 interval int,
+                 time TIMESTAMP PRIMARY KEY,
+                 next_run timestamp without time zone,
+                 id varchar(10000)'''
 
 def getSleepTime(conn, cur, ttime):
     
@@ -20,87 +31,31 @@ def getSleepTime(conn, cur, ttime):
     print(diff.total_seconds())
     return diff.total_seconds()
 
-def checkContent(dataDB):
-    newValue = []
-    oldValue = []
-    changeType = []
-    newTag = []
-    oldTag = []
-    #if can not scrape
-    data = Scrape(dataDB[0])
-    content = data.scrape()
-    soup = data.getModifiedHTML(content)
-    soup = BeautifulSoup(soup.prettify(), 'html.parser')
-    #find change in text
-    for index, idd in enumerate(dataDB[5]):
-        print("&777777", index)
-        print(dataDB[6][index])
-        minisoup = BeautifulSoup(dataDB[6][index], 'html.parser')
-        print(minisoup)
-        minisoup.find(id=idd).unwrap()
-        tag = soup.find(id=idd)
-        print("soup: ", soup)
-        print("id:", idd)
-        print("type", type(soup))
-        print("type", type(minisoup))
-        print("tag: ", tag)
-        print(tag)
-        parent = tag.parent
-        parent.span.unwrap()
-        print("lennnnnn", len(newValue))
-        if (len(newValue) < (index+1)):
-                oldTag.append([])
-                print("llllllllllll", oldTag)
-                newTag.append([])
-                oldValue.append([])
-                newValue.append([])
-                changeType.append([])
-        parenttext = ' '+ parent.get_text().strip() +' '
-        minisouptext = ' ' + minisoup.get_text().strip() + ' '
-        if  parenttext != minisouptext:
-            print("8888888888888", index)
-            print("9999999999999", len(oldTag))
-            oldTag[index].append(str(minisoup.prettify()))
-            newTag[index].append(str(parent.prettify()))
-            oldValue[index].append(minisouptext)
-            newValue[index].append(parenttext)
-            changeType[index].append('Change in content')
+def checkIncident(dataDB):
+    id = []
+    location = []
+    from_ = []
+    to_ = []
+    detail = []
 
-        if parent.name != minisoup.contents[0].name:
-            oldTag[index].append(str(minisoup.prettify()))
-            newTag[index].append(str(parent.prettify()))
-            oldValue[index].append(str(minisoup.contents[0].name))
-            newValue[index].append(str(parent.name))
-            changeType[index].append('Change in tag name')
-        
-        if len(parent.attrs) > len(minisoup.contents[0].attrs):
+    #northeast, southwest = services.geocodingService(dataDB[0], dataDB[1], dataDB[2])
+    # convert the string to list
+    coordinate = dataDB[3].split(',')
 
-            big = parent.attrs
-            small = minisoup.contents[0].attrs
-        else:
-            big = minisoup.contents[0].attrs
-            small = parent.attrs
-        for key in (list(big.keys())):
-            if key not in list(small.keys()):
-                oldTag[index].append(str(minisoup.prettify()))
-                newTag[index].append(str(parent.prettify()))
-                oldValue[index].append('not having that attribute before or it was removed')
-                newValue[index].append(key+ ' = '+ big[key])
-                changeType[index].append('new attribute added/removed')
-            elif minisoup.contents[0].attrs[key] != parent.attrs[key]:
-                oldTag[index].append(str(minisoup.prettify()))
-                newTag[index].append(str(parent.prettify()))
-                oldValue[index].append(minisoup.contents[0].attrs)
-                newValue[index].append(parent.attrs[key])
-                changeType[index].append("Change in attribute's value")
-        if not newTag[-1]:
-            oldTag.pop()
-            newTag.pop()
-            oldValue.pop()
-            newValue.pop()
-            changeType.pop()
-    print(changeType)
-    return newTag, oldTag, newValue, oldValue, changeType
+    northeast = {'lng': float(coordinate[0]), 'lat': float(coordinate[1])}
+    southwest = {'lng': float(coordinate[2]), 'lat': float(coordinate[3])}
+
+    data = services.trafficIncidentService(northeast, southwest)
+    if isinstance(data, str):
+        return id, location, from_, to, detail
+    
+
+
+
+
+
+    
+    
 
 def updateDB(cur, dataDB, newTag=[]):
     #list is mutable so need to make a copy to avoid changing the original list
@@ -241,11 +196,11 @@ def main():
         dataDB = cur.fetchone()
         #print(dataDB)
 
-        seconds = getSleepTime(conn, cur, dataDB[6])
+        seconds = getSleepTime(conn, cur, dataDB[7])
         
-        if (seconds > 5):
+        if seconds > 5:
             break
-        newTag, oldTag, newValue, oldValue, changeType = checkContent(dataDB)
+        newid, message = checkIncident(dataDB)
 
         #print(newTag)
         if newTag:
