@@ -63,16 +63,13 @@ export const MyForm = () => {
         .then(result => {
           console.log(result);
           // Handle the response from the Flask backend
-          /*if (result['value'] === 'Page retrieval failed.') {
+          if (result['value'] === 'ERROR2') {
             loading.innerHTML = '';
-            display.innerHTML = 'Page retrieval failed.';
-            } else if((result['value']) === 2) {
+            display.innerHTML = 'ERROR. Can not find the provided city/state/country. Please check your input.';
+            } else if((result['value']) === 'ERROR1') {
             loading.innerHTML = '';
             display.innerHTML = 'ERROR. Can not verify your email. Please check.';
-          } else {
-            loading.innerHTML = '';
-            display.innerHTML = '<iframe id="externalFrame" src="http://127.0.0.1:5500/website-tracker/viewpage/viewpage.html" style="width:80%; height: 700px;"></iframe>';
-          }*/
+          }
         })
         .catch(error => {
           console.error('Error:', error);

@@ -158,8 +158,8 @@ def resetID(cur, nextRun, originalTime, id):
     second = diff.total_seconds()
     # if 24 hours or more have passed
     if (second / 86400) >= 1:
-        query = '''UPDATE data SET time = %s WHERE ID = %s'''
-        value = (notTimeZoneAware2, id)
+        query = '''UPDATE data SET time = %s, incidentID = %s WHERE ID = %s'''
+        value = (notTimeZoneAware2, '', id)
         cur.execute(query, value)
 
 def main():
