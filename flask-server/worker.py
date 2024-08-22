@@ -1,4 +1,5 @@
 from dotenv import load_dotenv
+from bs4 import BeautifulSoup
 from datetime import timedelta, timezone
 import time, copy, smtplib, os, psycopg2, datetime
 from email.mime.multipart import MIMEMultipart
@@ -78,11 +79,16 @@ def updateDB(cur, dataDB, id=[]):
         value = (newNext_run, id, dataDB[3])
         cur.execute(query, value)
 
-def sendEmail(oldTag, newTag, newValue, oldValue, changeType, email, url):
+def sendEmail(from_, to_, detail, email, city, state, country):
     message = MIMEMultipart()
     message["From"] = os.getenv('SENDER_EMAIL')
     message["To"] = email
-    message["Subject"] = 'Change(s) Detected'
+    message["Subject"] = 'Traffic Incident(s) Detected'
+    if not state:
+        loc = f'{city}, {country}'
+    else:
+        loc = f'{city}, {state}, {country}'
+    url = ''
     HTML = f'''
             <html>
             <head>
@@ -93,17 +99,15 @@ def sendEmail(oldTag, newTag, newValue, oldValue, changeType, email, url):
             </style>
             </head>
             <body>
-            <p>New change(s) detected at<a href={url}> the website</a> you provided</p>
-            <p style='text-align: center; color: red; font-weight:bold; font-size:16px'>To stop receving email, please visit <a href="content-tracker.com">content-tracker.com</a> and enter your email at the bottom field.</p>
+            <p>Traffic incident(s) detected in <strong>{loc}</strong></p>
+            <p style='text-align: center; color: red; font-weight:bold; font-size:16px'>To stop receving email, please visit <a href="{url}">Traffic Monitor</a> and enter your email at the bottom field.</p>
             <p style='text-align:center'>
                 <table style="border-collapse: collapse;width: 100%;">
                     <thead>
                         <tr>
-                            <th>Change Type</th>
-                            <th>Old Value</th>
-                            <th>New Value</th>
-                            <th>Old tag</th>
-                            <th>New tag</th>
+                            <th>From</th>
+                            <th>To</th>
+                            <th>Detail</th>
                         </tr>
                     </thead>
                 </table>
@@ -113,39 +117,20 @@ def sendEmail(oldTag, newTag, newValue, oldValue, changeType, email, url):
         '''
     soup = BeautifulSoup(HTML, 'html.parser')
     table = soup.find('table')
-    for i in range(0, len(oldTag)):
+    for i in range(0, len(from_)):
         new_row = soup.new_tag('tr')
         td1 = soup.new_tag('td')
-        td1.string = changeType[i][0]
+        td1.string = from_[i]
         td2 = soup.new_tag('td')
-        td2.string = oldValue[i][0]
+        td2.string = to_[i]
         td3 = soup.new_tag('td')
-        td3.string = newValue[i][0]
-        td4 = soup.new_tag('td', rowspan=str(len(oldTag[i])))
-        #use html.escape to turn html format to html utility format so that it will not be render as html tag and be display as it is
-        td4.string = html.escape(oldTag[i][0])
-        td5 = soup.new_tag('td', rowspan=str(len(oldTag[i])))
-        td5.string = html.escape(newTag[i][0])
+        td3.string = ", ".join(detail[i])
         new_row.append(td1)
         new_row.append(td2)
         new_row.append(td3)
-        new_row.append(td4)
-        new_row.append(td5)
         table.append(new_row)
-        print(new_row)
-        for l in range(1, len(oldTag[i])):
-            new_row = soup.new_tag('tr')
-            td1 = soup.new_tag('td')
-            td1.string = changeType[i][l]
-            td2 = soup.new_tag('td')
-            td2.string = oldValue[i][l]
-            td3 = soup.new_tag('td')
-            td3.string = newValue[i][l]
-            new_row.append(td1)
-            new_row.append(td2)
-            new_row.append(td3)
-            table.append(new_row)
-            
+        #print(new_row)
+
     # Attach the HTML content
     message.attach(MIMEText(str(soup.prettify()), "html"))
 
@@ -200,7 +185,7 @@ def main():
         if id:
             updateDB(cur, dataDB, id)
             conn.commit()
-            if sendEmail(from_, to_, detail) == -1:
+            if sendEmail(from_, to_, detail, dataDB[4], dataDB[0], dataDB[1], dataDB[2]) == -1:
                 cur.execute(f'''DELETE FROM data WHERE time = {dataDB[6]}''')
                 conn.commit()
         else:
