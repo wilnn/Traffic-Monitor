@@ -1,4 +1,5 @@
 from flask import Flask, request
+import uuid
 from flask_cors import CORS
 import services
 from dotenv import load_dotenv
@@ -74,6 +75,9 @@ def data():
     notTimeZoneAware2 = notTimeZoneAware.astimezone(timezone.utc).replace(tzinfo=None)
     newTime = notTimeZoneAware2 + timedelta(minutes=int(data['time']))
 
+    id = uuid.uuid4()
+    id = id[len(id)-6:]
+
     conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
                         password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
     cur = conn.cursor()
@@ -84,6 +88,7 @@ def data():
     #again when running again to find the changes, tag is the set of tags of the selected text 
     #which will be used to compare with run again to find differences
     cur.execute('''CREATE TABLE IF NOT EXISTS data (
+                 ID varchar(7)
                  city varchar(200),
                  state varchar(100),
                  country varchar(100),
@@ -92,10 +97,10 @@ def data():
                  interval int,
                  time TIMESTAMP PRIMARY KEY,
                  next_run timestamp without time zone,
-                 id varchar(10000)''')
+                 incidentID varchar(10000)''')
     
     insertQuery ='''INSERT INTO data (city, state, country, coordinate, email, interval, time, next_run) VALUES (%s, %s, %s, %s, %s)'''
-    value = (data['city'], data['state'], data['country'], coordinate, data['clientEmail'], data['time'], notTimeZoneAware2, newTime)
+    value = (id, data['city'], data['state'], data['country'], coordinate, data['clientEmail'], data['time'], notTimeZoneAware2, newTime)
     #use place holder method to avoid SQL injecion
     cur.execute(insertQuery, value)
     conn.commit()
