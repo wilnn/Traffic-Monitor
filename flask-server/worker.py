@@ -31,6 +31,7 @@ def getSleepTime(conn, cur, ttime):
     print(diff.total_seconds())
     return diff.total_seconds()
 
+# this function will checck for new incidents to report
 def checkIncident(dataDB):
     id = []
     from_ = []
@@ -59,7 +60,7 @@ def checkIncident(dataDB):
 
     return id, from_, to_, detail
 
-def updateDB(cur, dataDB, newTag=[]):
+def updateDB(cur, dataDB, id=[]):
     #list is mutable so need to make a copy to avoid changing the original list
     if newTag:
         if newTag[0]:
@@ -168,8 +169,8 @@ def sendEmail(oldTag, newTag, newValue, oldValue, changeType, email, url):
             server.sendmail(os.getenv('SENDER_EMAIL'), email, message.as_string())
     except Exception as e:
         print('error sending email: '+ str(e))
-        return 0
-    return 1
+        return -1
+    return 0
 
 
 def main():
@@ -204,12 +205,11 @@ def main():
             break
         id, from_, to_, detail = checkIncident(dataDB)
 
-        #print(newTag)
-        if newTag:
-            updateDB(cur, dataDB, newTag)
+        if id:
+            updateDB(cur, dataDB, id)
             conn.commit()
-            if not sendEmail(oldTag, newTag, newValue, oldValue, changeType, dataDB[1], dataDB[0]):
-                cur.execute(f'''DELETE FROM data WHERE time = {dataDB[3]}''')
+            if sendEmail(from_, to_, detail) == -1:
+                cur.execute(f'''DELETE FROM data WHERE time = {dataDB[6]}''')
                 conn.commit()
         else:
             updateDB(conn, cur, dataDB)
