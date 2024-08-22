@@ -1,12 +1,11 @@
 from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from datetime import timedelta, timezone
-import time, copy, smtplib, os, psycopg2, datetime
+import time, smtplib, os, datetime
+import mysql.connector
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import html
 import services
-
 
 '''CREATE TABLE IF NOT EXISTS data (
                  ID varchar(7) PRIMARY KEY,
@@ -164,8 +163,11 @@ def resetID(cur, nextRun, originalTime, id):
 
 def main():
     load_dotenv()
-    conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
+    conn = mysql.connector.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
                             password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
+    if not conn.is_connected():
+        print("can not connect to the database")
+        return 6000
     #print(os.getenv('HOST'))
     #print(os.getenv('USER'))
     #print(os.getenv('DBNAME'), os.getenv('PORT'))
