@@ -61,8 +61,11 @@ def data():
     
     # get the bounding box for the given location. also test that location
     northeast, southwest = services.geocodingService(data['city'], data['state'], data['country'])
+    coordinate = f"{northeast['lng'], northeast['lat'], southwest['lng'], southwest['lat']}"
     if northeast == 'ERROR2':
         return {"value":'ERROR2'}
+    
+
     
     #get not timezone specific time
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
@@ -84,14 +87,15 @@ def data():
                  city varchar(200),
                  state varchar(100),
                  country varchar(100),
+                 coordinate varchar(300)
                  email varchar(320),
                  interval int,
                  time TIMESTAMP PRIMARY KEY,
                  next_run timestamp without time zone,
-                 id text[]''')
+                 id varchar(10000)''')
     
-    insertQuery ='''INSERT INTO data (city, state, country, email, interval, time, next_run) VALUES (%s, %s, %s, %s, %s)'''
-    value = (data['city'], data['state'], data['country'], data['clientEmail'], data['time'], notTimeZoneAware2, newTime)
+    insertQuery ='''INSERT INTO data (city, state, country, coordinate, email, interval, time, next_run) VALUES (%s, %s, %s, %s, %s)'''
+    value = (data['city'], data['state'], data['country'], coordinate, data['clientEmail'], data['time'], notTimeZoneAware2, newTime)
     #use place holder method to avoid SQL injecion
     cur.execute(insertQuery, value)
     conn.commit()
