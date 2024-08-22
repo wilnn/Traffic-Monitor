@@ -18,7 +18,7 @@ import services
                  next_run timestamp without time zone,
                  id varchar(10000)'''
 
-def getSleepTime(conn, cur, ttime):
+def getSleepTime(ttime):
     
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
     #turn not timezone aware object into naive 
@@ -199,7 +199,7 @@ def main():
         dataDB = cur.fetchone()
         #print(dataDB)
 
-        seconds = getSleepTime(conn, cur, dataDB[7])
+        seconds = getSleepTime(dataDB[7])
         
         if seconds > 5:
             break
