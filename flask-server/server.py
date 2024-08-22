@@ -1,10 +1,12 @@
 from flask import Flask, request
 import uuid
+import mysql.connector
+from mysql.connector import Error
 from flask_cors import CORS
 import services
 from dotenv import load_dotenv
 from datetime import timedelta, timezone
-import smtplib, datetime, os, psycopg2
+import smtplib, datetime, os
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 #import geocoder
@@ -65,9 +67,7 @@ def data():
     coordinate = f"{northeast['lng']},{northeast['lat']},{southwest['lng']},{southwest['lat']}"
     if northeast == 'ERROR2':
         return {"value":'ERROR2'}
-    
 
-    
     #get not timezone specific time
     notTimeZoneAware = datetime.datetime.now(tz=datetime.UTC)
 
@@ -78,8 +78,11 @@ def data():
     id = uuid.uuid4()
     id = id[len(id)-6:]
 
-    conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
+    conn = mysql.connector.connect(host=os.getenv('HOST'), database=os.getenv('DBNAME'), user=os.getenv('USER'), 
                         password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
+    
+    if not conn.is_connected():
+        return {"value":'ERROR0'}
     cur = conn.cursor()
 
     # create a table if not exist. url is the given url, email is given email,
@@ -107,47 +110,14 @@ def data():
     conn.close()
     cur.close()
 
-@app.route("/tags", methods=['POST'])
-def tags():
-    data = request.get_json()
-    print(data)
-
-    tags = getTagsByIDs(data['idss'])
-    with open("../viewpage/viewpage.html", 'w', encoding="utf-8") as file:
-        file.write('')
-    
-    conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
-                        password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
-    cur = conn.cursor()
-    #select all row from the data table that is sorted in descending order by value in time column and then limit to 1 row(first row)(row with highest time stamp value)
-    #ORDER BY will not sort the table permanently
-    updateQuery= '''
-    WITH LastRow AS (
-        SELECT *
-        FROM data
-        ORDER BY time DESC
-        LIMIT 1
-    )
-    UPDATE data
-    SET id = %s,
-        tag = %s
-    FROM LastRow
-    WHERE data.time = LastRow.time
-'''
-    value = (data['idss'], tags)
-    cur.execute(updateQuery, value)
-    conn.commit()
-    conn.close()
-    cur.close()
-
-    return {}
-
 @app.route("/unregister", methods=['POST'])
 def unregister():
     data = request.get_json()
 
-    conn = psycopg2.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
+    conn = mysql.connector.connect(host=os.getenv('HOST'), dbname=os.getenv('DBNAME'), user='postgres', 
                         password=os.getenv('PASSWORD'), port=os.getenv('PORT'))
+    if not conn.is_connected():
+        return {"value":'ERROR0'}
     cur = conn.cursor()
     query = '''DELETE FROM data WHERE email = %s'''
     value=[data['clientEmail']]
