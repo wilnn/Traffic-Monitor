@@ -61,7 +61,7 @@ def data():
     
     # get the bounding box for the given location. also test that location
     northeast, southwest = services.geocodingService(data['city'], data['state'], data['country'])
-    coordinate = f"{northeast['lng'], northeast['lat'], southwest['lng'], southwest['lat']}"
+    coordinate = f"{northeast['lng']},{northeast['lat']},{southwest['lng']},{southwest['lat']}"
     if northeast == 'ERROR2':
         return {"value":'ERROR2'}
     
