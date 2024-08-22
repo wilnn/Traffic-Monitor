@@ -33,7 +33,6 @@ def getSleepTime(conn, cur, ttime):
 
 def checkIncident(dataDB):
     id = []
-    location = []
     from_ = []
     to_ = []
     detail = []
@@ -46,16 +45,19 @@ def checkIncident(dataDB):
     southwest = {'lng': float(coordinate[2]), 'lat': float(coordinate[3])}
 
     data = services.trafficIncidentService(northeast, southwest)
-    if isinstance(data, str):
-        return id, location, from_, to, detail
-    
+    if not isinstance(data, str):
+        for incident in data['incidents']:
+            if incident['properties']['id'] in dataDB[8]:
+                continue
+            id.append(incident['properties']['id'][len(incident['properties']['id'])-3:])
+            from_.append(incident['properties']['from'])
+            to_.append(incident['properties']['to'])
+            e = []
+            for event in incident['properties']['events']:
+                e.append(event['description'])
+            detail.append(e)
 
-
-
-
-
-    
-    
+    return id, from_, to_, detail
 
 def updateDB(cur, dataDB, newTag=[]):
     #list is mutable so need to make a copy to avoid changing the original list
@@ -200,7 +202,7 @@ def main():
         
         if seconds > 5:
             break
-        newid, message = checkIncident(dataDB)
+        id, from_, to_, detail = checkIncident(dataDB)
 
         #print(newTag)
         if newTag:
