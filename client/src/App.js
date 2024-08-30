@@ -94,10 +94,11 @@ export const MyForm = () => {
             display.innerHTML = '<p style="color:red;">The database is full! Please check back later.</p>';
           }
         })
-        // catch the error when fail to send POST request to the server
+        // catch and handle the error when fail to send POST request to the server
         .catch(error => {
           console.error('Error:', error);
-          
+          loading.innerHTML = '';
+          display.innerHTML = '<p style="color:red;">There may be a problem with the server, or it is disabled by the owner to save money!<br> Check console for detail.</p>';
         });
     };
     return (
