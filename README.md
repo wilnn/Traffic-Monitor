@@ -1,4 +1,5 @@
 # Traffic Monitor
+**Visit the website at:** [https://traffic-monitor.pages.dev](https://traffic-monitor.pages.dev)
 
 <!--Badges-->
 ![Google Cloud](https://img.shields.io/badge/Google%20Cloud-%234285F4.svg?style=for-the-badge&logo=google-cloud&logoColor=white) &nbsp; &nbsp; &nbsp; 
