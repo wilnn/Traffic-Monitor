@@ -74,7 +74,7 @@ export const MyForm = () => {
             display.innerHTML = '<p style="color:red;">Failed to connect to the database.</p>';
           } else if (result['value'] === 'ERROR3') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;>Can not make a request to the traffic incidents API. The location you want to track need to be at most 10,000 km<sup>2</sup>. try narrowing down the location.</p>';
+            display.innerHTML = '<p style="color:red;">Can not make a request to the traffic incidents API. The location you want to track need to be at most 10,000 km<sup>2</sup>. try narrowing down the location.</p>';
           } else if (result['value'] === 'ok') {
             loading.innerHTML = '';
             display.innerHTML = '<p style="color:green;">You are all set!</p>';
