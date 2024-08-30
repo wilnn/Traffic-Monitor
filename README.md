@@ -29,3 +29,14 @@
     <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
+
+## About The Project
+* A **full-stack website** that helps users avoid traffic jams, closed roads, etc., by sending them notifications about traffic incidents anywhere.
+* The website is fully responsive and compatible with many devices. 
+* Uses **Google Map API** for geocoding service and **TomTom API** for traffic incidents for the best results.
+* The front end is created by Javascript, HTML, CSS, and the **React** framework. The front-end is deployed using **Cloudflare** Pages, which provide amazing **security protections** including, HTTPS, SSL/TLS encryption, DDoS and web scraping protection, prevent SQL injection and cross-site scripting, firewall protection, etc.
+* The back end (server) is created using Python's **Flask framework**. It includes **security protections** such as limited CORS access to prevent attackers from sending requests to the server, rate limiting to prevent DDoS attacks, and parameterized queries technique to prevent SQL injection. The server is deployed on **Google Cloud App Engine** for fast and reliable connections.
+* The server **handles all edge cases** such as users giving the wrong email, unknown locations, checking the connection to database and API services, check database storage. 
+* Includes a **worker** running on **AWS Lambda Function** that sends notifications to the user when new traffic incidents appear. The function is invoked using **AWS EventBridge** every 1 minute.
+* Includes one online 10 MB MySQL database.
+* All come at no cost! Each cloud and online service has been carefully chosen and set up to minimize the cost due to using them ($0 paid until now).
