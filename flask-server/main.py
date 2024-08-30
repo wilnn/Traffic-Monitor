@@ -34,6 +34,11 @@ limiter = Limiter(
 
 load_dotenv()
 
+# handle tooManyRequests error when exceeding 60 requests per minute
+@app.errorhandler(TooManyRequests)
+def ratelimit_error(e):
+    return jsonify(error="ratelimit exceeded", message=str(e.description)), 429
+
 def testEmail(email):
     message = MIMEMultipart()
     message["From"] = os.getenv('SENDER_EMAIL')
