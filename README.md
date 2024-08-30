@@ -13,3 +13,19 @@
 ![HTML5](https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white) &nbsp; &nbsp; &nbsp; 
 ![CSS3](https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white) &nbsp; &nbsp; &nbsp; 
 
+<!-- table of contents-->
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li>
+      <a href="#About-The-Project">About The Project</a>
+    </li>
+    <li><a href="#How-It-Works">How It Works</a></li>
+    <li><a href="#Example/Demonstration">Examples/Demonstration</a></li>
+    <li><a href="#Issue">Issue</a></li>
+    <li><a href="#Possible-Improvements">Possible Improvements</a></li>
+    <li><a href="#license">License</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#acknowledgments">Acknowledgments</a></li>
+  </ol>
+</details>
