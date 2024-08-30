@@ -272,3 +272,102 @@ body {
     }
   }
   
+  /* 
+    ##Device = Tablets, Ipads (landscape)
+    ##Screen = B/w 768px to 1024px
+  */
+  
+  @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) { 
+    .heroGroup {
+        flex-direction: column;
+    }
+    
+    .header {
+        height: 1.5vw;
+        font-size: 2.38vw;
+    }
+    .head3 {
+        flex:0.5;
+    }
+
+    .heroSubText {
+        font-size: 1.68vw;
+        margin-top: 0;
+        margin-bottom: 0.2vw;
+    }
+    
+    .heroMainText {
+        font-size: 2.5vw;
+        font-weight: bold;
+        margin-bottom: 1vw;
+    }
+
+    .inputText {
+        font-size: 1.68vw;
+        margin-top: 0.5vw;
+        margin-bottom: 0.0vw;
+    }
+    
+    .inputSubText {
+        font-size: 1.4vw;
+        margin-top: 0;
+        margin-bottom: 0.2vw;
+    }
+
+    .inputField { 
+        width:15vw;
+        height:1.5vw;
+        font-size:1.32vw;
+    
+    }
+    
+    .inputField2 { 
+        width:7vw;
+        height:1.62vw;
+        font-size:1.32vw;
+    }
+
+        
+    .button {
+        text-decoration: none;
+        background-color: #3882F6;
+        font-weight: bold;
+        padding: 0.5vw 1.1vw;
+        border-radius: 1vw;
+        display: inline-block;
+        margin: 1.4vw 0;
+        font-size: 1.24vw;
+        border: none;
+    }
+
+    .loading {
+        margin: auto;
+        border: 0.44vw solid #EAF0F6;
+        border-radius: 2.1vw;
+        border-top: 0.44vw solid #3882F6;
+        width: 3vw;
+        height: 3vw;
+        animation: spinner 1s linear infinite;
+    }
+    @keyframes spinner {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .heroLoading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .unregister {
+        padding: 0.75vw;
+        border: 0.3vw solid #3882F6;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width:55vw;
+        align-items: center;
+        gap: 1vw;
+    }
+}
