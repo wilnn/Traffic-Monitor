@@ -49,9 +49,11 @@ export const MyForm = () => {
         alert("Invalid email format.");
         return
       }
-
+      // load the tag that will contain the spinning circle
       var loading = document.getElementById('loading');
+      // load the tag that will display the status message
       var display = document.getElementById('display');
+      
       // add spinning circle to the webpage
       loading.innerHTML = '<span class="loading heroLoading"></span>';
 
@@ -82,7 +84,7 @@ export const MyForm = () => {
             display.innerHTML = '<p style="color:red;">ERROR. Failed to connect to the database.</p>';
           } else if (result['value'] === 'ERROR3') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;">Error. Can not make a request to the traffic incidents API.<br> The location you want to track need to be at most 10,000 kilometer square. try narrowing down the location.</p>';
+            display.innerHTML = '<p style="color:red;">Error. Can not make a request to the traffic incidents API.<br> The location you want to track need to be at most 10,000 km<sup>2</sup>. try narrowing down the location.</p>';
           } else if (result['value'] === 'ok') {
             loading.innerHTML = '';
             display.innerHTML = '<p style="color:green;">You are all set!</p>';
@@ -94,13 +96,15 @@ export const MyForm = () => {
             display.innerHTML = '<p style="color:red;">The database is full! Please check back later.</p>';
           }
         })
-        // catch and handle the error when fail to send POST request to the server
+        // catch and handle the error when failing to send a POST request to the server
         .catch(error => {
           console.error('Error:', error);
           loading.innerHTML = '';
-          display.innerHTML = '<p style="color:red;">There may be a problem with the server, or it is disabled by the owner to save money!<br> Check console for detail.</p>';
+          display.innerHTML = '<p style="color:red;">There may be a problem with the server, or it is disabled by the owner to save money!<br> Check the console for details.</p>';
         });
     };
+
+    // return the form is jsx format
     return (
       <>
         <form onSubmit={handleSubmit}>
@@ -110,7 +114,7 @@ export const MyForm = () => {
             <input type="text" value ={State} onChange={handleInputChange2} name="State" id = "State" class="inputField" maxlength="9999"/>
             <label for ="Country"><p class = "inputText color">Country:</p></label>
             <input type="text" value ={Country} onChange={handleInputChange3} name="Country" id = "Country" class="inputField" maxlength="9999" required/>
-            <label for="timeInterval"><p class = "inputText color">Time interval (minutes):</p><p  class = "inputSubText color">The city's traffic will be checked after every this amount of time. Minimum is 10 mins.</p></label>
+            <label for="timeInterval"><p class = "inputText color">Time interval (minutes):</p><p  class = "inputSubText color">The city's traffic will be checked after every this amount of time. The minimum is 10 mins.</p></label>
             <input type="number" value={timeInterval} onChange={handleInputChange4} id="timeInterval" name="timeInterval" min="10" max = "999999"step="1" placeholder="10-999999" required class="inputField2"/>
             <label for ="email"><p class = "inputText color">Email:</p></label>
             <input type = "email" value={email} onChange={handleInputChange5} id="email" name="email" required class="inputField"/><br/>
@@ -120,6 +124,7 @@ export const MyForm = () => {
     );
   };
 
+  // the form to unregister
 export const Form2 = () => {
     const [email, setEmail] = React.useState('');
     const handleInputChange = (event) => {
@@ -151,14 +156,19 @@ export const Form2 = () => {
           }
         }
       )
-      .catch(error => {
-        console.error('Error:', error);
-      });
+        // catch and handle the error when failing to send a POST request to the server
+        .catch(error => {
+          console.error('Error:', error);
+          loading.innerHTML = '';
+          display.innerHTML = '<p style="color:red;">There may be a problem with the server, or it is disabled by the owner to save money!<br> Check the console for details.</p>';
+        });
     }
+
+    // return the form in jsx format
     return (
       <form onSubmit={handleSubmit}>
       <div class="unregister">
-        <div class="unregisterItem"><label for ="email"><span class="unretext">Want to stop receiving emails? Enter your email to unregistser:</span></label></div>
+        <div class="unregisterItem"><label for ="email"><span class="unretext">Want to stop receiving emails? Enter your email to unregister:</span></label></div>
         <div class="unregisterItem"><input type = "email" value={email} onChange={handleInputChange} id="email" name="email" required class="inputField"/></div>
         <div class="unregisterItem"><input type = "submit" value = "Submit" class = "button color" style={{margin:'0'}}/></div>
         </div>
