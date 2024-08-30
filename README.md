@@ -40,3 +40,8 @@
 * Includes a **worker** running on **AWS Lambda Function** that sends notifications to the user when new traffic incidents appear. The function is invoked using **AWS EventBridge** every 1 minute.
 * Includes one online 10 MB MySQL database.
 * All come at no cost! Each cloud and online service has been carefully chosen and set up to minimize the cost due to using them ($0 paid until now).
+
+## How It Works
+* Users provide locations, time intervals, and email addresses on the website. This information is sent to the server for validation and stored in the database, and a confirmation email will be sent to the user when everything is all set. The user will start receiving emails every "time interval" if the worker program detects changes in traffic in the given locations.
+* The users can also enter their email into the second form on the website to stop receiving emails!
+
