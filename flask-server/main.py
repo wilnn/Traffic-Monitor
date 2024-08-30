@@ -143,6 +143,9 @@ def data():
     cur.close()
     return {'value': 'ok'}
 
+# this route is for unregistering user
+@app.route("/unregister", methods=['POST'])
+@limiter.limit("60 per minute")
 def unregister():
     data = request.get_json()
 
