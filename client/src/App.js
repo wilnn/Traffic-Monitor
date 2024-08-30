@@ -53,7 +53,7 @@ export const MyForm = () => {
       var loading = document.getElementById('loading');
       // load the tag that will display the status message
       var display = document.getElementById('display');
-      
+
       // add spinning circle to the webpage
       loading.innerHTML = '<span class="loading heroLoading"></span>';
 
@@ -67,7 +67,8 @@ export const MyForm = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ city: City, state: State, country: Country, time: timeInterval, clientEmail : email.toLowerCase() }),
-      })
+      }) // handle the response from the server if the request is sent successfully.
+         // first converting the response to json format then access the resposne content to handle
         .then(response => response.json())
         .then(result => {
           console.log(result);
@@ -84,23 +85,23 @@ export const MyForm = () => {
             display.innerHTML = '<p style="color:red;">ERROR. Failed to connect to the database.</p>';
           } else if (result['value'] === 'ERROR3') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;">Error. Can not make a request to the traffic incidents API.<br> The location you want to track need to be at most 10,000 km<sup>2</sup>. try narrowing down the location.</p>';
+            display.innerHTML = '<p style="color:red;">ERROR. Can not make a request to the traffic incidents service.<br> The location you want to track need to be at most 10,000 km<sup>2</sup>. Try narrowing down the location.</p>';
           } else if (result['value'] === 'ok') {
             loading.innerHTML = '';
             display.innerHTML = '<p style="color:green;">You are all set!</p>';
           }  else if (('error' in result) && result['error'] === 'ratelimit exceeded') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;">Too many requests. Try again later.</p>';
+            display.innerHTML = '<p style="color:red;">ERROR. Too many requests. Try again later.</p>';
           } else if (result['value'] === 'ERROR4') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;">The database is full! Please check back later.</p>';
+            display.innerHTML = '<p style="color:red;">ERROR. The database is full! Please check back later.</p>';
           }
         })
         // catch and handle the error when failing to send a POST request to the server
         .catch(error => {
           console.error('Error:', error);
           loading.innerHTML = '';
-          display.innerHTML = '<p style="color:red;">There may be a problem with the server, or it is disabled by the owner to save money!<br> Check the console for details.</p>';
+          display.innerHTML = '<p style="color:red;">ERROR. There may be a problem with the server, or it is disabled by the owner to save money!<br> Check the console for details.</p>';
         });
     };
 
@@ -135,23 +136,36 @@ export const Form2 = () => {
     const handleSubmit = (event) => {
       event.preventDefault();
       console.log(email)
+      // load the tag that will contain the spinning circle
+      var loading = document.getElementById('loading');
+      // load the tag that will display the status message
       var display = document.getElementById('display');
+
+      // add spinning circle to the webpage
+      loading.innerHTML = '<span class="loading heroLoading"></span>';
+
+      //send POST request to the server
       fetch('https://traffic-433100.ue.r.appspot.com/unregister', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({clientEmail: email}),
-      })
+      }) // handle the response from the server if the request is sent successfully.
+         // first converting the response to json format then access the resposne content to handle
         .then(response => response.json())
         .then(result => {
           if (result['value'] === "Email does not exist in the database. Please check the entered email."){
-            display.innerHTML = '<p style="color:red;">Email does not exist in the database. Please check the entered email.</p>';
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:red;">ERROR. Email does not exist in the database. Please check the entered email.</p>';
           } else if (result['value'] === 'ERROR0') {
-            display.innerHTML = '<p style="color:red;">Failed to connect to the database.</p>';
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:red;">ERROR. Failed to connect to the database.</p>';
           } else if (('error' in result) && result['error'] === 'ratelimit exceeded') {
-            display.innerHTML = '<p style="color:red;">Too many requests. Try again later.</p>';
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:red;">ERROR. Too many requests. Try again later.</p>';
           } else {
+            loading.innerHTML = '';
             display.innerHTML = '<p style="color:green;">Unregisted successfully</p>';
           }
         }
@@ -160,7 +174,7 @@ export const Form2 = () => {
         .catch(error => {
           console.error('Error:', error);
           loading.innerHTML = '';
-          display.innerHTML = '<p style="color:red;">There may be a problem with the server, or it is disabled by the owner to save money!<br> Check the console for details.</p>';
+          display.innerHTML = '<p style="color:red;">ERROR. There may be a problem with the server, or it is disabled by the owner to save money!<br> Check the console for details.</p>';
         });
     }
 
