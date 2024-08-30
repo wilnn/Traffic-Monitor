@@ -66,6 +66,8 @@ def data():
         return {"value":'ERROR2'}
 
     data2 = services.trafficIncidentService(northeast, southwest)
+    if isinstance(data2, str) and 'Can not make request' in data2:
+        return {"value":'ERROR3'}
 
     #test the given email
     status = testEmail(data['clientEmail'])
