@@ -26,6 +26,7 @@ app = Flask(__name__)
 cors = CORS(app, resources={r"/*": {"origins": "https://traffic-monitor.pages.dev"}})
 
 load_dotenv()
+
 def testEmail(email):
     message = MIMEMultipart()
     message["From"] = os.getenv('SENDER_EMAIL')
@@ -59,6 +60,27 @@ def data():
     if not conn.is_connected():
         return {"value":'ERROR0'}
     cur = conn.cursor()
+
+    # check database storage
+    query = """
+        SELECT 
+            table_schema AS "TrafficMonitor_rememberwe",
+            SUM(data_length + index_length) / 1024 / 1024 AS "database size in MB",
+            SUM(data_free) / 1024 / 1024 AS "free space in MB"
+        FROM 
+            information_schema.TABLES
+        GROUP BY 
+            table_schema;
+        """
+
+    # Execute the query
+    cur.execute(query)
+
+    # Fetch all results
+    results = cur.fetchall()
+    # the current maximum storage is 10 MB. If the database size is >= 9.8 MB, will not add new entries
+    if results[2][1] >= 9.8:
+        return {'value':'ERROR4'}
     
     # get the bounding box for the given location. also test that location. It will not work if the location is more than 10,000km^2
     northeast, southwest = services.geocodingService(data['city'], data['state'], data['country'])
@@ -118,7 +140,6 @@ def unregister():
     value=[data['clientEmail']]
     cur.execute(query, value)
     conn.commit()
-
     #cur.rowcount return the number of row affected by the last query
     if not cur.rowcount:
         conn.close()
