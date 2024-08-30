@@ -2,19 +2,31 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>content tracker</title>
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0">
+    <title>Traffic Monitor</title>
     <!-- Load React. -->
     <!--<script>var exports = {};</script>-->
 
 </head>
 <body>
-    <h2 class = "header color">Simple content Tracker</h2>
+    <div class = "header color">
+        <div class="header-item">
+            <h3 style="margin: 0px;">Traffic Monitor</h3>
+        </div>
+        <div class="header-item">
+            <h3 style="margin: 0px; text-align:right;"><a style="text-decoration: none; color:inherit;" href="">About Me</a></h3>
+        </div>
+        <div class="header-item head3">
+            <h3 style="margin: 0px; text-align:right;"><a style="text-decoration: none; color:inherit;" href="https://github.com/wilnn">My GitHub</a></h3>
+        </div>
+    </div>
+    
     <div class = "hero">
         <div class="heroGroup">
         <div class = "heroText">
             <p class = "heroMainText">Hi there!</p>
-            <p class = "heroSubText">description</span></p>
+            <p class = "heroSubText">Want to avoid closed roads, traffic jam, etc.?<br> 
+                Enter the information into the form so that you can start receiving emails about the traffic incidents in your city every "time interval" minutes.</span></p>
         </div>
         <div class = "input" id ="form"></div>
         </div>
@@ -26,7 +38,14 @@
     <br><br>
     <p style="text-align: center;" id="display"></p>
 
-    <div id="unregister2" style="margin-left: 10%;"></div>
-    <div style="display: flex; justify-content: center;"><div class="unregister" id="unregister"></div></div>
+    <div id="unregister2"></div>
+    
+    <div style="display:flex; justify-content: center; ">
+        <div >
+            <div id="unregister">
+
+            </div>
+        </div>
+    </div>
 </body>
 </html>
