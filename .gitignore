@@ -1,0 +1,6 @@
+flask-server/.env
+worker/.env
+flask-server/tempCodeRunnerFile.py
+flask-server/__pycache__/
+worker/__pycache__/
+video.mp4
