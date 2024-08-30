@@ -52,7 +52,7 @@ export const MyForm = () => {
       //'<span class="loading heroLoading"></span>' will automatically 
       //disappear when reload since it is written inside that tag in the DOM not inside the actual html file
       // Send data to Flask backend
-      fetch('http://127.0.0.1:5000/data', {
+      fetch('https://traffic-433100.ue.r.appspot.com/data', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,10 +65,25 @@ export const MyForm = () => {
           // Handle the response from the Flask backend
           if (result['value'] === 'ERROR2') {
             loading.innerHTML = '';
-            display.innerHTML = 'ERROR. Can not find the provided city/state/country. Please check your input.';
+            display.innerHTML = '<p style="color:red;">ERROR. Can not find the provided city/state/country. Please check your input.</p>';
             } else if((result['value']) === 'ERROR1') {
             loading.innerHTML = '';
-            display.innerHTML = 'ERROR. Can not verify your email. Please check.';
+            display.innerHTML = '<p style="color:red;>ERROR. Can not verify your email. Please check.</p>';
+          } else if (result['value'] === 'ERROR0') {
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:red;">Failed to connect to the database.</p>';
+          } else if (result['value'] === 'ERROR3') {
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:red;>Can not make a request to the traffic incidents API. The location you want to track need to be at most 10,000 km<sup>2</sup>. try narrowing down the location.</p>';
+          } else if (result['value'] === 'ok') {
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:green;">You are all set!</p>';
+          }  else if (('error' in result) && result['error'] === 'ratelimit exceeded') {
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:red;">Too many requests. Try again later.</p>';
+          } else if (result['value'] === 'ERROR4') {
+            loading.innerHTML = '';
+            display.innerHTML = '<p style="color:red;">The database is full! Please check back later.</p>';
           }
         })
         .catch(error => {
@@ -78,26 +93,23 @@ export const MyForm = () => {
     return (
       <>
         <form onSubmit={handleSubmit}>
-           <label for ="City"><p class = "heroSubText color">City:</p></label>
-            <input type="text" value ={City} onChange={handleInputChange1} name="City" id = "City" size = "50px" maxlength="9999" required/>
-            <label for ="State"><p class = "heroSubText color">State (optional):</p></label>
-            <input type="text" value ={City} onChange={handleInputChange2} name="State" id = "State" size = "50px" maxlength="9999"/>
-            <label for ="Country"><p class = "heroSubText color">Country:</p></label>
-            <input type="text" value ={Country} onChange={handleInputChange3} name="Country" id = "Country" size = "50px" maxlength="9999" required/>
-            <label for="timeInterval"><p class = "inputText color">Time interval (minutes):</p><p  class = "inputSubText color">The webpage will be check after every this amount of time. Minimum is 10 mins to avoid any bad consequences due to web scraping.</p></label>
-            <input type="number" value={timeInterval} onChange={handleInputChange4} id="timeInterval" name="timeInterval" min="1" max = "999999"step="1" placeholder="10-999999" required/>
+           <label for ="City"><p class = "heroSubText color">City or region:</p></label>
+            <input type="text" value ={City} onChange={handleInputChange1} name="City" id = "City" class="inputField" maxlength="9999" required/>
+            <label for ="State"><p class = "inputText color">State, or the region that includes the above region (optional):</p></label>
+            <input type="text" value ={State} onChange={handleInputChange2} name="State" id = "State" class="inputField" maxlength="9999"/>
+            <label for ="Country"><p class = "inputText color">Country:</p></label>
+            <input type="text" value ={Country} onChange={handleInputChange3} name="Country" id = "Country" class="inputField" maxlength="9999" required/>
+            <label for="timeInterval"><p class = "inputText color">Time interval (minutes):</p><p  class = "inputSubText color">The city's traffic will be checked after every this amount of time. Minimum is 10 mins.</p></label>
+            <input type="number" value={timeInterval} onChange={handleInputChange4} id="timeInterval" name="timeInterval" min="1" max = "999999"step="1" placeholder="10-999999" required class="inputField2"/>
             <label for ="email"><p class = "inputText color">Email:</p></label>
-            <input type = "email" value={email} onChange={handleInputChange5} id="email" name="email" required size = "50px"/><br/>
-            <input type = "submit" value = "GO!" class = "button color"/>
+            <input type = "email" value={email} onChange={handleInputChange5} id="email" name="email" required class="inputField"/><br/>
+            <input type = "submit" value = "START!" class = "button color"/>
         </form>
       </>
     );
   };
 
 export const Form2 = () => {
-    var marg = {
-      margin: '20px',
-    }
     const [email, setEmail] = React.useState('');
     const handleInputChange = (event) => {
       //the email input type will handle the input value. No need to sanitized the value.
@@ -108,7 +120,7 @@ export const Form2 = () => {
       event.preventDefault();
       console.log(email)
       var display = document.getElementById('display');
-      fetch('http://127.0.0.1:5000/unregister', {
+      fetch('https://traffic-433100.ue.r.appspot.com/unregister', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -118,9 +130,13 @@ export const Form2 = () => {
         .then(response => response.json())
         .then(result => {
           if (result['value'] === "Email does not exist in the database. Please check the entered email."){
-            display.innerHTML = "<p>Email does not exist in the database. Please check the entered email.</p>";
+            display.innerHTML = '<p style="color:red;">Email does not exist in the database. Please check the entered email.</p>';
+          } else if (result['value'] === 'ERROR0') {
+            display.innerHTML = '<p style="color:red;">Failed to connect to the database.</p>';
+          } else if (('error' in result) && result['error'] === 'ratelimit exceeded') {
+            display.innerHTML = '<p style="color:red;">Too many requests. Try again later.</p>';
           } else {
-            display.innerHTML = "<p>Unregisted successfully</p>";
+            display.innerHTML = '<p style="color:green;">Unregisted successfully</p>';
           }
         }
       )
@@ -130,9 +146,11 @@ export const Form2 = () => {
     }
     return (
       <form onSubmit={handleSubmit}>
-        <label for ="email"><span style={marg}>Want to stop receiving email? Enter your email to unregistser:</span></label>
-        <input type = "email" value={email} onChange={handleInputChange} id="email" name="email" required size = "50px"/>
-        <input type = "submit" value = "Submit" class = "button color" style={marg}/>
+      <div class="unregister">
+        <div class="unregisterItem"><label for ="email"><span class="unretext">Want to stop receiving emails? Enter your email to unregistser:</span></label></div>
+        <div class="unregisterItem"><input type = "email" value={email} onChange={handleInputChange} id="email" name="email" required class="inputField"/></div>
+        <div class="unregisterItem"><input type = "submit" value = "Submit" class = "button color" style={{margin:'0'}}/></div>
+        </div>
       </form>
     )
   }
