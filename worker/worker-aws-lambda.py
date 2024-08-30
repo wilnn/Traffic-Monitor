@@ -1,3 +1,11 @@
+#################
+
+# This version of the worker.py file is deployed to the AWS Lambda Function.
+# That function will be invoked every 1 minute using AWS Eventbridge. It is 1 minute because I don't want it to run too much
+# and exceed the free tier of the AWS Lambda Function, and the AWS lambda smallest invoking time interval is every 1 minute.
+
+#################
+
 import json
 # no need for load_dotenv because I have added the environment 
 #from dotenv import load_dotenv
