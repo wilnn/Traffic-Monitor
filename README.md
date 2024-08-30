@@ -47,3 +47,10 @@
 
 ## Example/Demonstration
 https://github.com/user-attachments/assets/a4be6d38-26ff-470f-a764-a0a6ca0039c2
+
+## Issue
+* The worker program may sometimes have a delay in sending emails to users because I had set up the worker program in AWS Lambda Function to be invoked every 1 minute. This was done to prevent it from going beyond the AWS free tier. It could be fixed by having a cloud platform that allows the code to be run 24/7 continuously. 
+
+## Possible Improvements
+* Allow users to enter specific times that they want to receive notifications about traffic incidents. This is more helpful for people who only want to avoid traffic problems at a specific time of the day, like before going to work, before a trip, and when going home, etc.
+* Send emails that have links that open Google Maps to show the specific roads that have traffic problems.
