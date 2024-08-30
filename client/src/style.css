@@ -371,3 +371,110 @@ body {
         gap: 1vw;
     }
 }
+  
+  /* 
+    ##Device = Low Resolution Tablets, Mobiles (Landscape)
+    ##Screen = B/w 481px to 767px
+  */
+  
+  @media (min-width: 481px) and (max-width: 767px) { 
+    .heroGroup {
+        flex-direction: column;
+    }
+    
+    .hero {
+        padding:7vw;
+    }
+
+    .header {
+        height: 4vw;
+        font-size: 3.2vw;
+    }
+    .head3 {
+        flex: 0.75;
+    }
+
+    .heroSubText {
+        font-size: 2.6vw;
+        margin-top: 0;
+        margin-bottom: 0.2vw;
+    }
+    
+    .heroMainText {
+        font-size: 3.9vw;
+        font-weight: bold;
+        margin-bottom: 1vw;
+    }
+
+    .inputText {
+        font-size: 2.6vw;
+        margin-top: 0.5vw;
+        margin-bottom: 0.0vw;
+    }
+    
+    .inputSubText {
+        font-size: 2vw;
+        margin-top: 0;
+        margin-bottom: 0.2vw;
+    }
+
+    .inputField {
+        width:40vw;
+        height: 12px;
+        font-size:2.7vw;
+    
+    }
+    
+    .inputField2 { 
+        width:14vw;
+        height: 12px;
+        font-size:2.7vw;
+    }
+
+    .button {
+        text-decoration: none;
+        background-color: #3882F6;
+        font-weight: bold;
+        padding: 0.6vw 1.25vw;
+        border-radius: 2vw;
+        display: inline-block;
+        margin: 1.4vw 0;
+        font-size: 2.8vw;
+        border: none;
+    }
+
+    .loading {
+        margin: auto;
+        border: 1vw solid #EAF0F6;
+        border-radius: 6vw;
+        border-top: 1vw solid #3882F6;
+        width: 6vw;
+        height: 6vw;
+        animation: spinner 1s linear infinite;
+    }
+    @keyframes spinner {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .heroLoading {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .unregister {
+        padding: 1vw;
+        border: 0.3vw solid #3882F6;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 73vw;
+        align-items: center;
+        gap: 1vw;
+    }
+
+    .unretext {
+        font-size: 2.6vw;
+    }
+}
