@@ -65,6 +65,8 @@ def data():
     if northeast == 'ERROR2':
         return {"value":'ERROR2'}
 
+    data2 = services.trafficIncidentService(northeast, southwest)
+
     #test the given email
     status = testEmail(data['clientEmail'])
     if status == -1:
