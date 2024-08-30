@@ -45,3 +45,5 @@
 * Users provide locations, time intervals, and email addresses on the website. This information is sent to the server for validation and stored in the database, and a confirmation email will be sent to the user when everything is all set. The user will start receiving emails every "time interval" if the worker program detects changes in traffic in the given locations.
 * The users can also enter their email into the second form on the website to stop receiving emails!
 
+## Example/Demonstration
+https://github.com/user-attachments/assets/a4be6d38-26ff-470f-a764-a0a6ca0039c2
