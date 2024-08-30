@@ -1,6 +1,7 @@
 import React from 'react';
 import './style.css';
 
+// the first form for location details, time interval, email address
 export const MyForm = () => {
     // Use useState for each input field
     const [City, setCity] = React.useState('');
@@ -39,18 +40,24 @@ export const MyForm = () => {
     // Submit handler
     const handleSubmit = (event) => {
       //cancel the default submit action of the form, if the page is reloading.
-      //somehow fixed the error of console.log not running
+      //fixed the error of console.log not showing messege due to auto page reloading
       event.preventDefault();
+
+      // regular expression to for validating email format
       var regex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
       if (!email.match(regex)) {
         alert("Invalid email format.");
         return
       }
+
       var loading = document.getElementById('loading');
       var display = document.getElementById('display');
+      // add spinning circle to the webpage
       loading.innerHTML = '<span class="loading heroLoading"></span>';
-      //'<span class="loading heroLoading"></span>' will automatically 
-      //disappear when reload since it is written inside that tag in the DOM not inside the actual html file
+
+      //'<span class="loading heroLoading"></span>' will automatically disappear when reload since 
+      //it is written inside that tag in the DOM not inside the actual html file
+
       // Send data to Flask backend
       fetch('https://traffic-433100.ue.r.appspot.com/data', {
         method: 'POST',
@@ -62,19 +69,20 @@ export const MyForm = () => {
         .then(response => response.json())
         .then(result => {
           console.log(result);
-          // Handle the response from the Flask backend
+
+          // Handle the response from the Flask backend (handle error message and success message from the backend)
           if (result['value'] === 'ERROR2') {
             loading.innerHTML = '';
             display.innerHTML = '<p style="color:red;">ERROR. Can not find the provided city/state/country. Please check your input.</p>';
             } else if((result['value']) === 'ERROR1') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;>ERROR. Can not verify your email. Please check.</p>';
+            display.innerHTML = '<p style="color:red;">ERROR. Can not verify your email. Please check.</p>';
           } else if (result['value'] === 'ERROR0') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;">Failed to connect to the database.</p>';
+            display.innerHTML = '<p style="color:red;">ERROR. Failed to connect to the database.</p>';
           } else if (result['value'] === 'ERROR3') {
             loading.innerHTML = '';
-            display.innerHTML = '<p style="color:red;">Can not make a request to the traffic incidents API. The location you want to track need to be at most 10,000 km<sup>2</sup>. try narrowing down the location.</p>';
+            display.innerHTML = '<p style="color:red;">Error. Can not make a request to the traffic incidents API.<br> The location you want to track need to be at most 10,000 kilometer square. try narrowing down the location.</p>';
           } else if (result['value'] === 'ok') {
             loading.innerHTML = '';
             display.innerHTML = '<p style="color:green;">You are all set!</p>';
@@ -86,8 +94,10 @@ export const MyForm = () => {
             display.innerHTML = '<p style="color:red;">The database is full! Please check back later.</p>';
           }
         })
+        // catch the error when fail to send POST request to the server
         .catch(error => {
           console.error('Error:', error);
+          
         });
     };
     return (
