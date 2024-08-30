@@ -100,7 +100,7 @@ export const MyForm = () => {
             <label for ="Country"><p class = "inputText color">Country:</p></label>
             <input type="text" value ={Country} onChange={handleInputChange3} name="Country" id = "Country" class="inputField" maxlength="9999" required/>
             <label for="timeInterval"><p class = "inputText color">Time interval (minutes):</p><p  class = "inputSubText color">The city's traffic will be checked after every this amount of time. Minimum is 10 mins.</p></label>
-            <input type="number" value={timeInterval} onChange={handleInputChange4} id="timeInterval" name="timeInterval" min="1" max = "999999"step="1" placeholder="10-999999" required class="inputField2"/>
+            <input type="number" value={timeInterval} onChange={handleInputChange4} id="timeInterval" name="timeInterval" min="10" max = "999999"step="1" placeholder="10-999999" required class="inputField2"/>
             <label for ="email"><p class = "inputText color">Email:</p></label>
             <input type = "email" value={email} onChange={handleInputChange5} id="email" name="email" required class="inputField"/><br/>
             <input type = "submit" value = "START!" class = "button color"/>
