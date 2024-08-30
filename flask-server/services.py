@@ -1,3 +1,10 @@
+#########
+
+# This module contains the function that make requests to the Google Map API's geocoding service
+# and TomTom API's traffic incident service.
+
+########
+
 import requests, os
 from dotenv import load_dotenv
 import json
@@ -10,7 +17,6 @@ def geocodingService(city, state, country):
         query = f'{city}, {state}, {country}'
     else:
         query = f'{city}, {country}'
-
 
     # Make the API request
     url = os.getenv('GEOCODINGURL')
@@ -38,7 +44,7 @@ def geocodingService(city, state, country):
         #print("City not found or error in API request.")
         return 'ERROR2', 'ERROR2'
 
-#northeast, southwest = geocodingService('Boston', 'Massachusetts', 'United State')
+#northeast, southwest = geocodingService('Tokyo', '', 'Japan')
 
 def trafficIncidentService(topRight, bottomLeft):
     url = os.getenv('TRAFFICINCIDENTURL')
@@ -57,11 +63,13 @@ def trafficIncidentService(topRight, bottomLeft):
     response = requests.get(url, params=params)
 
     if response.status_code != 200:
-        return f'Can not make request TomTom API. ERROR: {response.status_code}'
+        #print(response.content)
+        return f'Can not make request to TomTom API. ERROR: {response.status_code}'
     
     data = response.json()
 
     if len(data["incidents"]) == 0:
+        #print('none')
         return 'ERROR3'
     
     #print(json.dumps(data, indent=4))
