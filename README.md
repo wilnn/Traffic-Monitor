@@ -54,3 +54,17 @@ https://github.com/user-attachments/assets/a4be6d38-26ff-470f-a764-a0a6ca0039c2
 ## Possible Improvements
 * Allow users to enter specific times that they want to receive notifications about traffic incidents. This is more helpful for people who only want to avoid traffic problems at a specific time of the day, like before going to work, before a trip, and when going home, etc.
 * Send emails that have links that open Google Maps to show the specific roads that have traffic problems.
+
+## License
+Distributed under the MIT License. See LICENSE.txt for more information.
+
+## Contact
+William Nguyen - thangnguyen15700@gmail.com
+
+## Acknowledgments
+* AWS Lambda Function: [https://aws.amazon.com/lambda/](https://aws.amazon.com/lambda/)
+* Google Cloud App Engine: [https://cloud.google.com/appengine](https://cloud.google.com/appengine)
+* Database:  [https://filess.io/](https://filess.io/)
+* Google Map API's geocoding service: [https://developers.google.com/maps/documentation/geocoding/overview](https://developers.google.com/maps/documentation/geocoding/overview)
+* TomTom API's traffic incidents service: [https://developer.tomtom.com/traffic-api/documentation/traffic-incidents/traffic-incidents-service](https://developer.tomtom.com/traffic-api/documentation/traffic-incidents/traffic-incidents-service)
+* Cloudflare Pages: [https://pages.cloudflare.com/](https://pages.cloudflare.com/)
