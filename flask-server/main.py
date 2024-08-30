@@ -22,7 +22,8 @@ from werkzeug.exceptions import TooManyRequests
 #from timezonefinder import TimezoneFinder
 
 app = Flask(__name__)
-cors = CORS(app)
+# enable CORS. Only allow request from "https://traffic-monitor.pages.dev"
+cors = CORS(app, resources={r"/*": {"origins": "https://traffic-monitor.pages.dev"}})
 
 load_dotenv()
 def testEmail(email):
