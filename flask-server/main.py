@@ -25,6 +25,13 @@ app = Flask(__name__)
 # enable CORS. Only allow request from "https://traffic-monitor.pages.dev"
 cors = CORS(app, resources={r"/*": {"origins": "https://traffic-monitor.pages.dev"}})
 
+# add rate limit to prevent DOS attack. Only allow 60 requests per minute because this is a small app
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["60 per minute"]
+)
+
 load_dotenv()
 
 def testEmail(email):
@@ -50,6 +57,9 @@ def testEmail(email):
         return -1
     return 0
 
+# this route is for sending data
+@app.route("/data", methods=['POST'])
+@limiter.limit("60 per minute")
 def data():
     #force=True to skip content type requirement
     data = request.get_json()
