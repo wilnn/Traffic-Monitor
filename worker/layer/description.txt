@@ -1,0 +1,2 @@
+The python.zip is deployed to AWS layer. It contains the third party libraries that will be used by worker-aws-lambda.py in AWS Lambda Function
+The zip file already includes the services.py module inside.
